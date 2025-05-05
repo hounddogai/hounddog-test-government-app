@@ -29,4 +29,4 @@ jobs:
     - name: Run HoundDog.ai Scan
       env:
         HOUNDDOG_API_KEY: ${{ secrets.HOUNDDOG_API_KEY }}
-      run: hounddog scan
+      run: hounddog scan .
