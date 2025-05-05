@@ -1,0 +1,23 @@
+name: HoundDog.ai Scan
+'on':
+  workflow_dispatch: {}
+  push:
+    branches:
+    - main
+jobs:
+  hounddog:
+    name: Run HoundDog.ai Scan
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    container:
+      image: hounddogai/hounddog
+      options: --pull=always
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Run HoundDog.ai Scan
+      env:
+        HOUNDDOG_API_KEY: ${{ secrets.HOUNDDOG_API_KEY }}
+      run: hounddog scan
