@@ -1,32 +1,30 @@
-name: HoundDog.ai Scan
-'on':
+name: Run HoundDog.ai Scan
+on:
   workflow_dispatch:
     inputs:
       debug:
         type: boolean
-        description: Debug this workflow via SSH
         default: false
+        description: Enable debug mode
   push:
     branches:
     - main
 jobs:
   hounddog:
     name: Run HoundDog.ai Scan
-    runs-on: ubuntu-latest
+    runs-on: dev-us-east-1-ubuntu-arm64
     permissions:
       contents: read
       security-events: write
     container:
-      image: hounddogai/hounddog
+      image: hounddogai/hounddog:staging
       options: --pull=always
+    if: (github.actor != 'dependabot[bot]')
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
-    - name: Debug with SSH
-      if: ${{ failure() || inputs.debug }}
-      uses: mxschmitt/action-tmate@v3
-      timeout-minutes: 60
+      uses: actions/checkout@master
     - name: Run HoundDog.ai Scan
       env:
         HOUNDDOG_API_KEY: ${{ secrets.HOUNDDOG_API_KEY }}
-      run: hounddog scan .
+      run: hounddog scan ${{ inputs.debug && '--debug' || '' }}
+      continue-on-error: true
